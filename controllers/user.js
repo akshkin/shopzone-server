@@ -18,14 +18,14 @@ const signUp = async (req, res) => {
     if (existingUser) {
       return res
         .status(400)
-        .json({ errors: [{ message: "Email already in use" }] });
+        .json({ error: { message: "Email already in use" } });
     }
     await user.save();
     const token = await user.generateAuthToken();
     res.status(200).json({ user, token });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ eroors: [{ message: "Server error" }] });
+    res.status(500).json({ error: { message: "Server error" } });
   }
 };
 
@@ -38,7 +38,7 @@ const signIn = async (req, res) => {
     const token = await user.generateAuthToken();
     res.status(200).json({ user, token });
   } catch (error) {
-    res.status(400).json({ errors: [{ message: "Invalidemail or password" }] });
+    res.status(400).json({ error: { message: "Invalid email or password" } });
   }
 };
 

@@ -52,7 +52,9 @@ const updateProduct = async (req, res) => {
       );
       if (!product) {
         console.log("No task");
-        return res.status(404).json("No product by that id");
+        return res
+          .status(404)
+          .json({ error: { message: "No product by that id" } });
       }
       await updatedProduct.save();
       res.json(updatedProduct);
@@ -61,7 +63,7 @@ const updateProduct = async (req, res) => {
     }
   } else {
     console.log("here");
-    res.status(404).json("No task by the selected id");
+    res.status(404).json({ error: { message: "No task by the selected id" } });
   }
 };
 
