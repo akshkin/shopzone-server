@@ -1,5 +1,5 @@
 const express = require("express");
-const auth = require("../middleware/auth.js");
+const { auth, adminAuth } = require("../middleware/auth.js");
 const {
   validation,
   signIn,
@@ -8,6 +8,7 @@ const {
   updateProfile,
   getProfile,
   deleteProfile,
+  getAllUsers,
 } = require("../controllers/user");
 
 const router = new express.Router();
@@ -23,5 +24,7 @@ router.get("/users/profile", auth, getProfile);
 router.patch("/users/profile", auth, updateProfile);
 
 router.delete("/users/profile", auth, deleteProfile);
+
+router.get("/users/admin", auth, adminAuth, getAllUsers);
 
 module.exports = router;

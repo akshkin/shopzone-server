@@ -40,8 +40,9 @@ const createProduct = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-  const _id = req.params._id;
+  const _id = req.params.id;
   const product = req.body;
+  console.log(_id);
   if (mongoose.Types.ObjectId.isValid(_id)) {
     try {
       const updatedProduct = await Product.findByIdAndUpdate(
@@ -50,6 +51,7 @@ const updateProduct = async (req, res) => {
         { new: true }
       );
       if (!product) {
+        console.log("No task");
         return res.status(404).json("No product by that id");
       }
       await updatedProduct.save();
@@ -58,6 +60,7 @@ const updateProduct = async (req, res) => {
       res.status(500).json(error);
     }
   } else {
+    console.log("here");
     res.status(404).json("No task by the selected id");
   }
 };

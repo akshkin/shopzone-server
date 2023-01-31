@@ -25,7 +25,7 @@ const signUp = async (req, res) => {
     res.status(200).json({ user, token });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Server error");
+    res.status(500).json({ eroors: [{ message: "Server error" }] });
   }
 };
 
@@ -49,14 +49,17 @@ const signOut = async (req, res) => {
     );
     await req.user.save();
     res.json(req.user);
+    console.log(req.user.tokens);
   } catch (error) {
     res.status(500).json(error);
+    console.log(error);
   }
 };
 
 const getProfile = async (req, res) => {
   try {
     res.json(req.user);
+    console.log(req.user.tokens);
   } catch (error) {
     res.json(error);
   }
@@ -83,6 +86,15 @@ const deleteProfile = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  const users = await User.find({});
+  try {
+    res.json(users);
+  } catch (error) {
+    res.json(error);
+  }
+};
+
 module.exports = {
   validation,
   signIn,
@@ -91,4 +103,5 @@ module.exports = {
   getProfile,
   updateProfile,
   deleteProfile,
+  getAllUsers,
 };
