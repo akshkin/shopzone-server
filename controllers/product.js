@@ -39,6 +39,36 @@ const createProduct = async (req, res) => {
   }
 };
 
+const getProductDetail = async (req, res) => {
+  const _id = req.params.id;
+  if (mongoose.Types.ObjectId.isValid(_id)) {
+    try {
+      const product = await Product.findById(_id);
+      res.status(200).json(product);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  } else {
+    res.status(404).json({ message: "Product not found" });
+  }
+};
+
+const searchProducts = async (req, res) => {
+  let query = {};
+  const { searchQuery } = req.query;
+  if (searchQuery) {
+    query.$or = [{ title: { $regex: req.query.searchQuery, $options: "i" } }];
+  }
+  try {
+    const products = await Product.find(query);
+    res.status(200).json(products);
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ message: error.message });
+  }
+};
+
 const updateProduct = async (req, res) => {
   const _id = req.params.id;
   const product = req.body;
@@ -85,6 +115,8 @@ module.exports = {
   uploadImage,
   getProducts,
   createProduct,
+  getProductDetail,
   updateProduct,
   deleteProduct,
+  searchProducts,
 };
