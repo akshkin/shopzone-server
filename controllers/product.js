@@ -80,6 +80,7 @@ const getProductsByCategory = async (req, res) => {
 
   try {
     const products = await Product.find(query);
+    const totalProducts = products.length;
     res.status(200).json({ products, totalProducts });
   } catch (error) {
     console.log(error);
