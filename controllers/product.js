@@ -20,12 +20,70 @@ const uploadImage = async (req, res) => {
 };
 
 const getProducts = async (req, res) => {
-  const products = await Product.find();
+  let page = parseInt(req.query.page) - 1 || 0;
+  let limit = parseInt(req.query.limit) || 7;
+  let sort = req.query.sort || "rating";
+  let category = req.query.category || "All";
+  let price = parseInt(req.query.price) || 1000000;
+  let rating = parseInt(req.query.rating);
+
+  const categories = [
+    "men's clothing",
+    "women's clothing",
+    "electronics",
+    "jewelery",
+  ];
+  category = category === "All" ? [...categories] : category.split(",");
+
+  const sortBy = {};
+  if (req.query.sort) {
+    const parts = req.query.sort.split("_");
+    sortBy[parts[0]] = parts[1] === "desc" ? -1 : 1;
+  } else {
+    sortBy["rating"] = -1;
+  }
+
+  const totalProducts = await Product.countDocuments();
+
+  const products = await Product.find()
+    .where("category")
+    .in([...category])
+    .where("rating.rate")
+    .gte(req.query.rating ? +rating : 0)
+    .where("price")
+    .lt(price)
+    .sort(sortBy)
+    .skip(page * limit)
+    .limit(limit);
+
+  const response = {
+    totalProducts,
+    page: page + 1,
+    limit,
+    category: categories,
+    products,
+  };
   try {
-    res.status(200).json(products);
+    res.status(200).json(response);
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
+  }
+};
+
+const getProductsByCategory = async (req, res) => {
+  const { category } = req.query;
+  let query = {};
+  if (category) {
+    query.$or = [{ category: { $regex: category, $options: "i" } }];
+  }
+
+  try {
+    const products = await Product.find(query);
+    res.status(200).json({ products, totalProducts });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ messsage: error.message });
   }
 };
 
@@ -62,6 +120,8 @@ const searchProducts = async (req, res) => {
   }
   try {
     const products = await Product.find(query);
+    const totalProducts = await Product.countDocuments();
+    console.log(totalProducts);
     res.status(200).json(products);
   } catch (error) {
     console.log(error);
@@ -119,4 +179,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   searchProducts,
+  getProductsByCategory,
 };

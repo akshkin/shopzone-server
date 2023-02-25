@@ -10,12 +10,14 @@ const {
   deleteProduct,
   getProductDetail,
   searchProducts,
+  getProductsByCategory,
 } = require("../controllers/product");
 
 router.get("/products", getProducts);
 router.post("/products/upload", upload.single("image"), uploadImage);
 router.post("/products", auth, adminAuth, createProduct);
 router.get("/products/search", searchProducts);
+router.get("/products/category", getProductsByCategory);
 router.get("/products/:id", getProductDetail);
 router.patch("/products/:productId", auth, adminAuth, updateProduct);
 router.delete("/products/:productId", auth, adminAuth, deleteProduct);
