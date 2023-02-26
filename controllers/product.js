@@ -21,7 +21,7 @@ const uploadImage = async (req, res) => {
 
 const getProducts = async (req, res) => {
   let page = parseInt(req.query.page) - 1 || 0;
-  let limit = parseInt(req.query.limit) || 7;
+  let limit = parseInt(req.query.limit);
   let sort = req.query.sort || "rating";
   let category = req.query.category || "All";
   let price = parseInt(req.query.price) || 1000000;
