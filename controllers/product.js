@@ -43,8 +43,6 @@ const getProducts = async (req, res) => {
     sortBy["rating"] = -1;
   }
 
-  const totalProducts = await Product.countDocuments();
-
   const products = await Product.find()
     .where("category")
     .in([...category])
@@ -56,8 +54,18 @@ const getProducts = async (req, res) => {
     .skip(page * limit)
     .limit(limit);
 
+  const totalProducts = products.length;
+
+  const prices = products.map((product) => product.price);
+
+  console.log(prices);
+  const maxPrice = Math.max(...prices);
+  const minPrice = Math.min(...prices);
+
   const response = {
     totalProducts,
+    maxPrice,
+    minPrice,
     page: page + 1,
     limit,
     category: categories,
