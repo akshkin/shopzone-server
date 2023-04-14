@@ -25,7 +25,9 @@ const getProducts = async (req, res) => {
   let sort = req.query.sort || "rating";
   let category = req.query.category || "All";
   let price = parseInt(req.query.price) || 1000000;
-  let rating = parseInt(req.query.rating);
+  let ratings = req.query.rating
+    ? req.query.rating.split(",").map((r) => parseInt(r))
+    : [0];
 
   const categories = [
     "men's clothing",
@@ -43,22 +45,29 @@ const getProducts = async (req, res) => {
     sortBy["rating"] = -1;
   }
 
-  const products = await Product.find()
+  let query = Product.find()
     .where("category")
     .in([...category])
-    .where("rating.rate")
-    .gte(req.query.rating ? +rating : 0)
     .where("price")
     .lt(price)
     .sort(sortBy)
     .skip(page * limit)
     .limit(limit);
 
+  const ratingFilters = ratings.map((rating) => {
+    const nextRating = rating + 1;
+    return { "rating.rate": { $gte: rating, $lt: nextRating } };
+  });
+
+  /**return any products that match any of the filters */
+  query = query.or(ratingFilters);
+
+  const products = await query.exec();
+
   const totalProducts = products.length;
 
   const prices = products.map((product) => product.price);
 
-  console.log(prices);
   const maxPrice = Math.max(...prices);
   const minPrice = Math.min(...prices);
 
@@ -75,7 +84,7 @@ const getProducts = async (req, res) => {
     res.status(200).json(response);
   } catch (error) {
     console.log(error);
-    res.status(400).json(error);
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -102,7 +111,7 @@ const createProduct = async (req, res) => {
     await product.save();
     res.status(201).json(product);
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -151,18 +160,15 @@ const updateProduct = async (req, res) => {
       );
       if (!product) {
         console.log("No task");
-        return res
-          .status(404)
-          .json({ error: { message: "No product by that id" } });
+        return res.status(404).json({ message: "No product by that id" });
       }
       await updatedProduct.save();
       res.json(updatedProduct);
     } catch (error) {
-      res.status(500).json(error);
+      res.status(500).json({ message: error.message });
     }
   } else {
-    console.log("here");
-    res.status(404).json({ error: { message: "No task by the selected id" } });
+    res.status(404).json({ message: "No product by the selected id" });
   }
 };
 
@@ -174,7 +180,7 @@ const deleteProduct = async (req, res) => {
       const product = await Product.findByIdAndDelete({ _id });
       res.status(200).json(product);
     } catch (error) {
-      res.status(500).json(error);
+      res.status(500).json({ message: error.message });
     }
   }
 };

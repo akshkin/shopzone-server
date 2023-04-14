@@ -6,12 +6,12 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const userRouter = require("../routes/user");
 const productRouter = require("../routes/product");
-
+const corsOptions = require("../config/corsOptions");
 const app = express();
+const port = process.env.PORT || 8000;
 dotenv.config();
 
-const port = process.env.PORT;
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(userRouter);
