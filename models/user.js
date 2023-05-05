@@ -52,38 +52,38 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.methods.generateAuthToken = async function () {
-  const user = this;
-  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET);
+// userSchema.methods.generateAuthToken = async function () {
+//   const user = this;
+//   const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET);
 
-  user.tokens = user.tokens.concat({ token });
-  await user.save();
+//   user.tokens = user.tokens.concat({ token });
+//   await user.save();
 
-  return token;
-};
+//   return token;
+// };
 
-userSchema.statics.findByCredentials = async (email, password) => {
-  const user = await User.findOne({ email });
-  if (!user) {
-    throw new Error("Unable to login");
-  }
-  const isMatch = await bcrypt.compare(password, user.password);
+// userSchema.statics.findByCredentials = async (email, password) => {
+//   const user = await User.findOne({ email });
+//   if (!user) {
+//     throw new Error("Unable to login");
+//   }
+//   const isMatch = await bcrypt.compare(password, user.password);
 
-  if (!isMatch) {
-    throw new Error("Invalid credentials");
-  }
+//   if (!isMatch) {
+//     throw new Error("Invalid credentials");
+//   }
 
-  return user;
-};
+//   return user;
+// };
 
-userSchema.pre("save", async function (next) {
-  const user = this;
+// userSchema.pre("save", async function (next) {
+//   const user = this;
 
-  if (user.isModified("password")) {
-    user.password = await bcrypt.hash(user.password, 8);
-  }
-  next();
-});
+//   if (user.isModified("password")) {
+//     user.password = await bcrypt.hash(user.password, 8);
+//   }
+//   next();
+// });
 
 const User = mongoose.model("User", userSchema);
 

@@ -57,7 +57,8 @@ const signOut = async (req, res) => {
 const getProfile = async (req, res) => {
   try {
     res.json(req.user);
-    console.log(req.user.tokens);
+    console.log(req.user);
+    // console.log(req.user.tokens);
   } catch (error) {
     res.json({ message: error.message });
   }
@@ -85,9 +86,9 @@ const deleteProfile = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
-  const users = await User.find({}).select("-password").lean();
+  const users = await User.find().select("-password").lean();
   try {
-    if (!users.length) {
+    if (!users?.length) {
       return res.status(404).json({ message: "No users found." });
     }
     res.json(users);
