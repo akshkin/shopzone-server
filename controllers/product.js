@@ -25,9 +25,9 @@ const getProducts = async (req, res) => {
   let sort = req.query.sort || "rating";
   let category = req.query.category || "All";
   let price = parseInt(req.query.price) || 1000000;
-  let ratings = req.query.rating
-    ? req.query.rating.split(",").map((r) => parseInt(r))
-    : [0];
+  // let ratings = req.query.rating
+  //   ? req.query.rating.split(",").map((r) => parseInt(r))
+  //   : [0];
 
   const categories = [
     "men's clothing",
@@ -54,13 +54,13 @@ const getProducts = async (req, res) => {
     .skip(page * limit)
     .limit(limit);
 
-  const ratingFilters = ratings.map((rating) => {
-    const nextRating = rating + 1;
-    return { "rating.rate": { $gte: rating, $lt: nextRating } };
-  });
+  // const ratingFilters = ratings.map((rating) => {
+  //   const nextRating = rating + 1;
+  //   return { "rating.rate": { $gte: rating, $lt: nextRating } };
+  // });
 
   /**return any products that match any of the filters */
-  query = query.or(ratingFilters);
+  // query = query.or(ratingFilters);
 
   const products = await query.exec();
 

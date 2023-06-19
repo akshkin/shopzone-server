@@ -1,5 +1,5 @@
 const express = require("express");
-const { adminAuth } = require("../middleware/auth.js");
+const { adminAuth, auth } = require("../middleware/auth.js");
 const {
   validation,
   signIn,
@@ -10,7 +10,6 @@ const {
   deleteProfile,
   getAllUsers,
 } = require("../controllers/user");
-const verifyJWT = require("../middleware/verifyJwt");
 
 const router = new express.Router();
 
@@ -18,14 +17,14 @@ router.post("/users/signup", validation, signUp);
 
 router.post("/users/signin", signIn);
 
-router.post("/users/signout", verifyJWT, signOut);
+router.post("/users/signout", auth, signOut);
 
-router.get("/users/profile", verifyJWT, getProfile);
+router.get("/users/profile", auth, getProfile);
 
-router.patch("/users/profile", verifyJWT, updateProfile);
+router.patch("/users/profile", auth, updateProfile);
 
-router.delete("/users/profile", verifyJWT, deleteProfile);
+router.delete("/users/profile", auth, deleteProfile);
 
-router.get("/users/admin", verifyJWT, getAllUsers);
+router.get("/users/admin", auth, getAllUsers);
 
 module.exports = router;

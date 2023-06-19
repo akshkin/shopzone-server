@@ -1,4 +1,6 @@
 const User = require("../models/user.js");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { check, validationResult } = require("express-validator");
 
 const validation = [
@@ -28,14 +30,40 @@ const signUp = async (req, res) => {
 };
 
 const signIn = async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const user = await User.findByCredentials(
-      req.body.email,
-      req.body.password
-    ).exec();
-    const token = await user.generateAuthToken();
-    res.status(200).json({ user, token });
+    // const user = await User.findByCredentials(
+    //   email,
+    //   password
+    // ).exec();
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    const existingUser = await User.findOne({ email }).exec();
+
+    if (!existingUser) {
+      return res.status(401).json({ message: "Unable to login" });
+    }
+
+    const match = await bcrypt.compare(password, existingUser.password);
+
+    if (!match) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const token = jwt.sign(
+      { _id: existingUser._id.toString() },
+      process.env.JWT_SECRET
+    );
+
+    existingUser.tokens = existingUser.tokens.concat({ token });
+    await existingUser.save();
+
+    res.status(200).json({ existingUser, token });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ message: "Invalid email or password" });
   }
 };
