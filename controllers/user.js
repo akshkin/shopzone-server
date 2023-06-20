@@ -20,8 +20,14 @@ const signUp = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: "Email already in use" });
     }
+    const token = jwt.sign(
+      { _id: existingUser._id.toString() },
+      process.env.JWT_SECRET
+    );
+    user.tokens = user.tokens.concat({ token });
+
     await user.save();
-    const token = await user.generateAuthToken();
+
     res.status(200).json({ user, token });
   } catch (error) {
     console.log(error);
@@ -74,11 +80,10 @@ const signOut = async (req, res) => {
       (token) => token.token !== req.token
     );
     await req.user.save();
-    res.json(req.user);
-    console.log(req.user.tokens);
+    res.status(200).json(req.user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
     console.log(error);
+    res.status(500).json({ message: error.message });
   }
 };
 

@@ -9,6 +9,7 @@ const orderRouter = require("../routes/order");
 const corsOptions = require("../config/corsOptions");
 const cookieParser = require("cookie-parser");
 const cartRouter = require("../routes/cart");
+const favoritesRouter = require("../routes/favorites");
 const app = express();
 const port = process.env.PORT || 8000;
 // dotenv.config();
@@ -20,6 +21,7 @@ app.use(userRouter);
 app.use(productRouter);
 app.use(cartRouter);
 app.use(orderRouter);
+app.use(favoritesRouter);
 
 const CONNECTION_URL = process.env.CONNECTION_URL;
 
