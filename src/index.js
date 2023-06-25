@@ -1,21 +1,27 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const dotenv = require("dotenv");
-const bodyParser = require("body-parser");
+const dotenv = require("dotenv").config();
 const path = require("path");
 const userRouter = require("../routes/user");
 const productRouter = require("../routes/product");
-
+const orderRouter = require("../routes/order");
+const corsOptions = require("../config/corsOptions");
+const cookieParser = require("cookie-parser");
+const cartRouter = require("../routes/cart");
+const favoritesRouter = require("../routes/favorites");
 const app = express();
-dotenv.config();
+const port = process.env.PORT || 8000;
+// dotenv.config();
 
-const port = process.env.PORT;
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
-app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(userRouter);
 app.use(productRouter);
+app.use(cartRouter);
+app.use(orderRouter);
+app.use(favoritesRouter);
 
 const CONNECTION_URL = process.env.CONNECTION_URL;
 

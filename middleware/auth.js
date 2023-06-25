@@ -11,17 +11,13 @@ const auth = async (req, res, next) => {
     });
 
     if (!user) {
-      return res
-        .status(401)
-        .json({ errors: [{ message: "Please log in to continue" }] });
+      return res.status(401).json({ message: "Please log in to continue" });
     }
     req.user = user;
     req.token = token;
     next();
   } catch (error) {
-    res
-      .status(401)
-      .json({ errors: [{ message: "Please log in to continue" }] });
+    res.status(401).json({ message: "Please log in to continue" });
   }
 };
 
