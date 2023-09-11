@@ -8,14 +8,10 @@ const favoritesSchema = new mongoose.Schema({
   },
   products: [
     {
-      productId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
-        required: true,
-      },
       product: {
-        type: mongoose.Schema.Types.Mixed,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
+        ref: "Product",
       },
     },
   ],

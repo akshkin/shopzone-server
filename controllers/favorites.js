@@ -17,19 +17,30 @@ const toggleFavorites = async (req, res) => {
     if (!favorites) {
       favorites = new Favorite({
         user: userId,
-        products: [{ productId: product._id, product }],
+        products: [product._id],
       });
     }
+
+    await favorites.save();
 
     const favoriteItemIndex = favorites.products.findIndex((item) =>
       item.product._id.equals(product._id)
     );
 
     if (favoriteItemIndex === -1) {
-      favorites.products.push({ productId: product._id, product });
+      favorites.products.push({ product: product._id });
     } else {
       favorites.products.splice(favoriteItemIndex, 1);
     }
+
+    await favorites.save();
+
+    favorites = await Favorite.findOne({ user: userId })
+      .populate({
+        path: "products",
+        populate: { path: "product", ref: "Product" },
+      })
+      .exec();
 
     await favorites.save();
     return res.status(200).json(favorites);
@@ -42,7 +53,13 @@ const toggleFavorites = async (req, res) => {
 const getFavorites = async (req, res) => {
   const userId = req.user.id;
   try {
-    const favorites = await Favorite.findOne({ user: userId });
+    const favorites = await Favorite.findOne({ user: userId }).populate({
+      path: "products",
+      populate: {
+        path: "product",
+        model: Product,
+      },
+    });
     if (!favorites) {
       return res.status(404).json({ message: "No Favorites added" });
     }
