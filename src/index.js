@@ -23,6 +23,10 @@ app.use(cartRouter);
 app.use(orderRouter);
 app.use(favoritesRouter);
 
+app.get("/api/config/paypal", (req, res) => {
+  res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
+});
+
 const CONNECTION_URL = process.env.CONNECTION_URL;
 
 mongoose

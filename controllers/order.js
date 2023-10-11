@@ -1,6 +1,8 @@
 const Order = require("../models/order.js");
+const Product = require("../models/product.js");
 
 const addOrderItem = async (req, res) => {
+  console.log(req.body);
   const {
     orderItems,
     shippingAddress,
@@ -9,8 +11,7 @@ const addOrderItem = async (req, res) => {
     taxPrice,
     shippingPrice,
     totalPrice,
-  } = req.body.data;
-  console.log(req.body.data);
+  } = req.body;
 
   if (orderItems && orderItems.length > 0) {
     const order = new Order({
@@ -18,7 +19,8 @@ const addOrderItem = async (req, res) => {
       user: req.user._id,
       orderItems: orderItems.map((item) => ({
         ...item,
-        product: item._id,
+        product: item.product._id,
+        _id: undefined,
       })),
     });
     const createdOrder = await order.save();
@@ -29,14 +31,20 @@ const addOrderItem = async (req, res) => {
 };
 
 const getOrder = async (req, res) => {
-  const order = await Order.findById(req.params.id).populate(
-    "user",
-    "name email"
-  );
-  if (order) {
-    return res.json(order);
-  } else {
-    res.status(404).json({ message: "Order not found." });
+  try {
+    const order = await Order.findById(req.params.id)
+      .populate("user", "name email")
+      .populate({
+        path: "orderItems.product",
+        model: Product,
+      });
+    if (order) {
+      return res.json(order);
+    } else {
+      res.status(404).json({ message: "Order not found." });
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -58,6 +66,25 @@ const getOrder = async (req, res) => {
   }
  */
 
-const checkout = (req, res) => {};
+const updateOrderPayment = async (req, res) => {
+  try {
+    const orderId = req.params.id;
 
-module.exports = { addOrderItem, getOrder, checkout };
+    const order = await Order.findByIdAndUpdate(orderId, {
+      isPaid: true,
+      paidAt: Date.now(),
+      paymentResult: {
+        id: req.body.id,
+        status: req.body.status,
+        update_time: req.body.update_time,
+        email_address: req.body.email_address,
+      },
+    });
+    return res.status(200).json(order);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Something went wrong" });
+  }
+};
+
+module.exports = { addOrderItem, getOrder, updateOrderPayment };
