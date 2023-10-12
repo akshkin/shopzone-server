@@ -9,6 +9,8 @@ const {
   getProfile,
   deleteProfile,
   getAllUsers,
+  saveShippingInfo,
+  getShippingInfo,
 } = require("../controllers/user");
 
 const router = new express.Router();
@@ -26,5 +28,9 @@ router.patch("/users/profile", auth, updateProfile);
 router.delete("/users/profile", auth, deleteProfile);
 
 router.get("/users/admin", auth, getAllUsers);
+
+router.patch("/users/save/address", auth, saveShippingInfo);
+
+router.get("/users/save/address", auth, getShippingInfo);
 
 module.exports = router;

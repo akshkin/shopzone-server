@@ -58,7 +58,6 @@ const addToCart = async (req, res) => {
         model: Product,
       },
     });
-    console.log(cart);
     await cart.save();
     res.status(200).json({ cart, totalPrice });
   } catch (error) {
@@ -201,7 +200,6 @@ const getCart = async (req, res) => {
       (acc, current) => acc + current.totalPrice,
       0
     );
-    console.log(cart);
 
     res.status(200).json({ cart, totalPrice });
   } catch (error) {

@@ -91,7 +91,6 @@ const getProfile = async (req, res) => {
   try {
     res.json(req.user);
     console.log(req.user);
-    // console.log(req.user.tokens);
   } catch (error) {
     res.json({ message: error.message });
   }
@@ -130,6 +129,39 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const getShippingInfo = async (req, res) => {
+  try {
+    const user = await User.findOne(req.user).select("shippingAddress");
+    if (!user) {
+      throw new Error("No user found");
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const saveShippingInfo = async (req, res) => {
+  try {
+    const user = await User.findOne(req.user);
+    if (!user) {
+      throw new Error("No user found");
+    }
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user,
+      {
+        shippingAddress: req.body.shippingAddress,
+      },
+      {
+        new: true,
+      }
+    );
+    return res.status(200).json(updatedUser.shippingAddress);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   validation,
   signIn,
@@ -139,4 +171,6 @@ module.exports = {
   updateProfile,
   deleteProfile,
   getAllUsers,
+  saveShippingInfo,
+  getShippingInfo,
 };
