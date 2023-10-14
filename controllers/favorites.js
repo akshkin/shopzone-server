@@ -61,7 +61,7 @@ const getFavorites = async (req, res) => {
       },
     });
     if (!favorites) {
-      return res.status(404).json({ message: "No Favorites added" });
+      return res.json({ message: "No Favorites added" });
     }
     res.status(200).json(favorites);
   } catch (error) {
