@@ -194,7 +194,7 @@ const getCart = async (req, res) => {
     });
 
     if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
+      return res.json({ message: "No products added to cart." });
     }
     const totalPrice = cart.products.reduce(
       (acc, current) => acc + current.totalPrice,

@@ -13,15 +13,15 @@ const validation = [
 ];
 
 const signUp = async (req, res) => {
-  const user = new User(req.body);
   const { email, password, name } = req.body;
   try {
     const existingUser = await User.findOne({ email }).exec();
     if (existingUser) {
       return res.status(400).json({ message: "Email already in use" });
     }
+    const user = new User(req.body);
     const token = jwt.sign(
-      { _id: existingUser._id.toString() },
+      { _id: user._id.toString() },
       process.env.JWT_SECRET
     );
     user.tokens = user.tokens.concat({ token });
@@ -37,12 +37,8 @@ const signUp = async (req, res) => {
 
 const signIn = async (req, res) => {
   const { email, password } = req.body;
-  try {
-    // const user = await User.findByCredentials(
-    //   email,
-    //   password
-    // ).exec();
 
+  try {
     if (!email || !password) {
       return res.status(400).json({ message: "All fields are required." });
     }
