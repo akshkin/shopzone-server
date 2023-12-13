@@ -17,7 +17,7 @@ const toggleFavorites = async (req, res) => {
     if (!favorites) {
       favorites = new Favorite({
         user: userId,
-        products: [product._id],
+        products: [{ product: product._id }],
       });
     }
 
