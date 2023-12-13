@@ -18,7 +18,6 @@ const addToCart = async (req, res) => {
         user: userId,
         products: [
           {
-            //productId: product._id,
             product: product._id,
             quantity: 1,
             totalPrice: product.price,
@@ -39,7 +38,6 @@ const addToCart = async (req, res) => {
       cartProduct.totalPrice = product.price * cartProduct.quantity;
     } else {
       const newCartItem = {
-        // productId: product._id,
         product: product._id,
         quantity: 1,
         totalPrice: product.price,
