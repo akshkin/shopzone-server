@@ -5,10 +5,12 @@ const {
   getOrder,
   getOrderUnlogged,
   updateOrderPayment,
+  getOrders,
 } = require("../controllers/order");
 const { auth } = require("../middleware/auth");
 const router = new express.Router();
 
+router.get("/orders", auth, getOrders);
 router.post("/order/create", auth, addOrderItem);
 router.post("/order/create-unlogged", addOrderItemUnlogged);
 router.get("/order/:id", auth, getOrder);
